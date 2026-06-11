@@ -1,4 +1,4 @@
 interface:
   display_name: "Pro Thinking Gate"
-  short_description: "Auto-route hard tasks through Pro review with Chrome tool discovery."
-  default_prompt: "Use $pro-thinking-gate to score task difficulty, discover Chrome control tools when needed, choose standard or extended Pro review, and show sanitized file-upload permission guidance when Chrome blocks uploads."
+  short_description: "Auto-route hard tasks through real Pro review, not local xhigh."
+  default_prompt: "Use $pro-thinking-gate to score task difficulty, treat local high/xhigh/超高 as non-Pro, discover Chrome control tools when needed, choose standard or extended Pro review, and show sanitized file-upload permission guidance when Chrome blocks uploads."

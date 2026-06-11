@@ -4,6 +4,8 @@
 
 Pro Thinking Gate is a Codex skill that automatically routes high-complexity work through a Pro-model review gate before Codex proceeds.
 
+It treats local high-effort reasoning and Pro review as different layers. Local `high`, `xhigh`, `超高`, or similar reasoning modes can help prepare and audit the gate, but they never substitute for a real Pro-model response.
+
 It now supports two Pro paths:
 
 - **Standard mode** for normal hard tasks, with a 5-minute wait.
@@ -30,6 +32,16 @@ It also treats file upload as first-class behavior. When a task involves a file,
 The intended behavior is automatic invocation. Users should not need to write "go ask Pro in Chrome" every time.
 
 After the skill is installed, Codex should recognize difficulty signals in the user task itself and enter the Pro review gate before doing the next substantive step. Explicit invocation is still useful for testing, debugging, or forcing the gate on a borderline task, but it is not the normal workflow.
+
+## Local Reasoning Is Not Pro
+
+Codex must not skip the gate just because the current local run uses high-effort reasoning.
+
+- Local `high`, `xhigh`, `超高`, "deep reasoning", or similar effort settings are still local Codex reasoning.
+- Pro means an external Pro-model session consulted through Chrome, or a Pro response explicitly pasted by the user for audit.
+- A local high-effort answer never counts as a Pro response and cannot mark the gate as passed.
+- Local high effort is useful for preparing the Pro brief, checking sources, and auditing the Pro answer.
+- The gate may be skipped or blocked only for explicit reasons: the user disables it, the task is simple/local, privacy prevents sharing and no redacted prompt is approved, Chrome/tool access fails after discovery, or the user approves continuing without Pro.
 
 ## When It Should Trigger
 
@@ -251,6 +263,7 @@ Output format:
 
 Codex should mark the gate as passed only when all applicable checks are satisfied:
 
+- A real Pro response was obtained through Chrome or explicitly pasted by the user; local `high`, `xhigh`, or `超高` reasoning alone is not enough.
 - The Pro response directly addresses the user's actual objective.
 - Important constraints, files, data, and context were considered.
 - Critical claims do not rely only on unsupported assertion.

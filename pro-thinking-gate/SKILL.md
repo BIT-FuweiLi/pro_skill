@@ -1,6 +1,6 @@
 ---
 name: pro-thinking-gate
-description: 'Automatically invoke a Pro-model review gate when Codex detects high-complexity work: heavy research, comprehensive search, mathematical reasoning, detailed plan design, full-paper or long-document proofreading, long-context synthesis, high-stakes technical judgment, or other tasks likely to exceed local reasoning reliability. Score task difficulty and search scope to choose Pro standard mode or Pro extended mode. Use Chrome to ask a Pro model, wait according to the selected mode, audit the response, and iterate until the answer passes before taking the next substantive step. Prefer real file upload when files are involved; when Chrome blocks uploads because the Codex extension lacks file URL access, open Chrome extension settings or the Codex extension Details page without exposing extension IDs, guide the user to enable the permission, then retry before using text fallback.'
+description: 'Automatically invoke a Pro-model review gate when Codex detects high-complexity work: heavy research, comprehensive search, mathematical reasoning, detailed plan design, full-paper or long-document proofreading, long-context synthesis, high-stakes technical judgment, or other tasks likely to exceed local reasoning reliability. Score task difficulty and search scope to choose Pro standard mode or Pro extended mode. Do not treat local high/xhigh/超高 reasoning as a substitute for Pro. Use Chrome to ask a Pro model, wait according to the selected mode, audit the response, and iterate until the answer passes before taking the next substantive step. Prefer real file upload when files are involved; when Chrome blocks uploads because the Codex extension lacks file URL access, open Chrome extension settings or the Codex extension Details page without exposing extension IDs, guide the user to enable the permission, then retry before using text fallback.'
 ---
 
 # Pro Thinking Gate
@@ -12,6 +12,17 @@ Use this skill as an automatic hard review gate for tasks where the local agent 
 The gate requires scoring the task, choosing Pro standard or Pro extended mode, consulting the Pro model through Chrome, waiting according to the selected mode, auditing the response, and looping with follow-up questions until the review passes.
 
 Do not take the next substantive action until the gate passes. Harmless context gathering needed to brief the Pro model is allowed.
+
+## Model Tier Boundary
+
+Local reasoning modes and Pro are different layers. Do not confuse them.
+
+- Local `high`, `xhigh`, `超高`, "deep reasoning", or similar effort settings are still local Codex reasoning.
+- Pro means an external Pro-model session consulted through Chrome, or a Pro response explicitly pasted by the user for audit.
+- A local `xhigh` or `超高` answer never counts as a Pro response and must not mark the gate `PASS`.
+- Do not skip the gate because the current local model sounds confident, used high effort, ran many commands, or produced a plausible answer.
+- Use local high-effort reasoning to prepare the Pro brief, verify facts, and audit the Pro answer, not to replace the Pro gate.
+- Skip or block the gate only under the explicit skip/block rules: user disables it, task is simple/local, privacy prevents sharing and no redacted prompt is approved, Chrome/tool access is unavailable after discovery, or the user explicitly approves continuing without Pro.
 
 ## Trigger Rules
 
@@ -131,6 +142,7 @@ Do not silently replace file upload with text extraction.
    - State that the Pro Thinking Gate is being used and why.
    - Assign `Difficulty D` and `Search Scope S`, then choose standard or extended mode.
    - Identify the exact decision that must pass the gate before proceeding.
+   - Do not skip the gate merely because the local run is using `high`, `xhigh`, `超高`, or another high-effort reasoning setting.
 
 2. Prepare a Pro brief.
    - Include the user objective, relevant context, constraints, artifacts, assumptions, and desired output format.
@@ -217,6 +229,7 @@ Output format:
 
 Mark the gate `PASS` only when all applicable checks are satisfied:
 
+- A real Pro response was obtained through Chrome or explicitly pasted by the user; local `high`, `xhigh`, or `超高` reasoning alone is not enough.
 - The answer directly addresses the user's actual objective.
 - Important constraints and artifacts were considered.
 - No critical claim depends only on unsupported assertion.
@@ -238,6 +251,7 @@ When responding to the user after using the gate, briefly state:
 - Whether the Pro response passed after audit.
 - Whether files were uploaded successfully or a fallback was used.
 - If upload permission blocked the task, whether the Codex extension details page was opened or exact manual permission steps were given.
+- If the gate was skipped or blocked, the actual skip/block reason; never cite local `xhigh` or `超高` reasoning as a substitute for Pro.
 - The verified conclusion or next action.
 - Any remaining uncertainty, source limitation, permission limitation, or blocker.
 
