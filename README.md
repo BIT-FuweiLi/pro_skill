@@ -68,6 +68,18 @@ Use **standard mode** for all other gated tasks.
 - After an extended-mode first answer, follow-up questions use standard mode.
 - If the UI labels change, choose the closest visible standard/fast mode or extended/deep mode by meaning. If no recognizable option exists, report the uncertainty and use the strongest available Pro mode.
 
+## Chrome Tool Discovery
+
+A skill is an instruction bundle; it does not itself grant browser tools. Depending on the Codex session, Chrome may appear as a direct browser tool, as a Chrome plugin skill, or through a Node REPL bridge used by the Chrome plugin.
+
+The skill now requires Codex to try Chrome tool discovery before declaring the Pro gate blocked:
+
+1. Use the Chrome plugin or `chrome:control-chrome` skill when available.
+2. If no direct Chrome tool is visible, search deferred tools for `node_repl js`.
+3. Use the Chrome plugin browser-client bootstrap through the Node REPL `js` tool.
+4. Do not treat missing package-level Playwright as proof that Chrome is unavailable; Playwright is only relevant after Chrome browser-client setup exposes `tab.playwright`.
+5. Report a real block only after Chrome tool discovery, Node REPL access, browser-client bootstrap, and extension troubleshooting have failed.
+
 ## File Upload Policy
 
 When a task involves local files, PDFs, manuscripts, figures, spreadsheets, or other artifacts, Codex should prefer real upload of the original file.
@@ -194,7 +206,7 @@ When the skill is automatically or explicitly triggered, Codex should:
 2. Assign `Difficulty D` and `Search Scope S`, then choose standard or extended mode.
 3. Prepare a Pro brief from the user objective, relevant files, constraints, assumptions, and desired output format.
 4. Upload original files when files are involved; if upload is blocked, open the Codex extension details page and recover Chrome file URL permissions before considering fallback text.
-5. Submit the brief through Chrome using the user's available Pro session.
+5. Discover Chrome control tools when needed, then submit the brief through Chrome using the user's available Pro session.
 6. Wait 5 minutes for standard mode or 20 minutes for extended mode.
 7. If extended mode still has no output after 20 minutes, click `Answer now`, `立即回答`, or the closest equivalent.
 8. Audit the response for coverage, evidence, logic, math, constraints, actionability, file handling, and privacy boundaries.

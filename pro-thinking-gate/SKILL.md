@@ -63,6 +63,21 @@ Use Pro standard mode for all other gated tasks.
 - After an extended-mode first answer, use standard mode for all follow-up questions in the same gate. Do not spend another 15-20 minutes on each follow-up unless the user explicitly requests another extended pass.
 - If the UI labels change, choose the closest visible standard/fast mode or extended/deep mode by meaning. If no recognizable choice exists, report the uncertainty and use the strongest available Pro mode.
 
+## Chrome Tool Discovery Policy
+
+Skills are instructions, not tool grants. A Pro gate must not assume Chrome is unavailable just because no direct `chrome` tool is visible in the initial active tool list.
+
+Before marking Chrome/Pro access as `BLOCKED`, try tool discovery in this order:
+
+1. If the Chrome plugin or `chrome:control-chrome` skill is available, follow that skill.
+2. If no direct Chrome tool is visible but tool discovery is available, search for `node_repl js` and expose the Node REPL `js` tool.
+3. Use the Chrome plugin's browser-client bootstrap through the Node REPL `js` tool. This is the normal Chrome control path in many Codex Desktop sessions.
+4. Do not use missing package-level Playwright as evidence that Chrome is unavailable. Plain Playwright availability is not the Chrome plugin. References to Playwright should mean the `tab.playwright` API after Chrome browser-client setup succeeds.
+5. If the browser-client bootstrap reports Chrome extension setup or communication trouble, read the Chrome troubleshooting guidance from the Chrome control skill before retrying or marking the gate blocked.
+6. Mark the gate `BLOCKED` for Chrome access only after all available discovery paths fail: no direct Chrome tool or skill, no usable tool discovery, no Node REPL `js` tool, missing Chrome browser-client runtime, or Chrome extension communication failure after troubleshooting.
+
+When reporting a Chrome-access block to the user, name the missing layer in plain language, for example: "Chrome control was not exposed in this Codex session", "the Node REPL browser bridge was unavailable", or "the Chrome extension connection failed." Do not expose internal runtime stack traces unless the user asks.
+
 ## File Upload Policy
 
 When the task involves local files, attachments, PDFs, manuscripts, figures, spreadsheets, or other artifacts, prefer real upload of the original file over extracted-text substitution.
@@ -130,6 +145,7 @@ Do not silently replace file upload with text extraction.
 
 4. Ask the Pro model through Chrome.
    - Prefer the Chrome tool or Chrome plugin so the user's logged-in Pro session is available.
+   - If Chrome is not directly visible, follow the Chrome Tool Discovery Policy before declaring the gate blocked.
    - Open a fresh chat unless the user asks to continue an existing one.
    - Select standard or extended mode according to the Routing Score and Model Mode Policy.
    - Submit the Pro brief and any required uploaded files.

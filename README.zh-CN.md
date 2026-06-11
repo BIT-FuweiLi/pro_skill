@@ -68,6 +68,18 @@ Pro Thinking Gate 是一个用于 Codex 的高复杂度任务自动审查门控 
 - 扩展版首轮回复之后，同一 gate 的后续追问使用标准版。
 - 如果 UI 标签变化，按含义选择最接近的标准/快速模式或扩展/深度模式。若无法识别，说明不确定性并使用当前最强可用 Pro 模式。
 
+## Chrome 工具发现
+
+skill 只是指令包，本身不会授予浏览器工具。不同 Codex 会话里，Chrome 可能表现为直接浏览器工具、Chrome 插件 skill，或者由 Chrome 插件通过 Node REPL 桥接出来的控制入口。
+
+该 skill 现在要求 Codex 在判定 Pro gate 被阻塞前先尝试 Chrome 工具发现：
+
+1. 如果 Chrome 插件或 `chrome:control-chrome` skill 可用，优先使用它。
+2. 如果没有直接可见的 Chrome 工具，使用 deferred tool discovery 搜索 `node_repl js`。
+3. 通过 Node REPL `js` 工具运行 Chrome 插件的 browser-client bootstrap。
+4. 不要把普通 Playwright 包不可用当成 Chrome 不可用的证据；Playwright 只有在 Chrome browser-client 启动后暴露出 `tab.playwright` 时才相关。
+5. 只有在 Chrome 工具发现、Node REPL、browser-client bootstrap 和扩展通信排查都失败后，才报告真正的 Chrome 阻塞。
+
 ## 文件上传策略
 
 当任务涉及本地文件、PDF、manuscript、图件、表格或其他 artifact 时，Codex 应优先上传原文件。
@@ -186,7 +198,7 @@ Use $pro-thinking-gate to force Pro-model review for this borderline task.
 2. 给出 `Difficulty D` 和 `Search Scope S`，选择标准版或扩展版。
 3. 从用户目标、相关文件、约束、假设和期望输出格式中整理 Pro brief。
 4. 如果任务涉及文件，优先上传原文件；若上传被权限挡住，打开 Codex 扩展详情页并恢复 Chrome file URL 权限，再考虑文本兜底。
-5. 通过 Chrome 使用用户可用的 Pro 会话提交 brief。
+5. 必要时先发现 Chrome 控制工具，然后通过 Chrome 使用用户可用的 Pro 会话提交 brief。
 6. 标准版等待 5 分钟，扩展版等待 20 分钟。
 7. 如果扩展版 20 分钟后仍无输出，点击 `Answer now`、`立即回答` 或最接近的等价控件。
 8. 从覆盖度、证据、逻辑、数学、约束、可执行性、文件处理和隐私边界等角度审查回复。
