@@ -326,3 +326,7 @@ chrome://extensions
 ## 核心规则
 
 当任务足够困难时，自动评分，选择标准版或扩展版 Pro，必要时上传原文件，按所选模式等待，审查回复，迭代直到通过，然后才继续。
+
+## 开源协议
+
+Apache License 2.0。详见 [LICENSE](LICENSE)。

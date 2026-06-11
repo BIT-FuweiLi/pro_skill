@@ -334,3 +334,7 @@ If Chrome is unavailable, the user can manually paste the Pro response back into
 ## Core Rule
 
 When a task is difficult enough, automatically score it, choose standard or extended Pro mode, upload original files when needed, wait according to the selected mode, audit the response, iterate until it passes, and only then continue.
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE).
